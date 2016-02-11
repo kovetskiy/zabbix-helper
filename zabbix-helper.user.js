@@ -1,5 +1,5 @@
 // Zabbix Helper
-// Version 1.0
+// Version 1.1
 // Author: Egor Kovetskiy <e.kovetskiy@gmail.com>
 
 // This is a Greasemonkey user script.
@@ -171,20 +171,48 @@ var zabbixHelper = function() {
                         );
                     }
                 });
+            })
+            .bind('blur', function() {
+                log('searcher blur');
+                setTimeout(function () {
+                    if (!$(graphs).is(':focus')) {
+                        $(graphs).hide();
+                    }
+                }, 1000);
+            })
+            .bind('keydown', function(keyDownEvent) {
+                if (keyDownEvent.which == 13) {
+                    log('keydown 13');
+                    $(graphs)
+                        .focus()
+                        .find('option:first')
+                        .attr('selected', 'selected')
+                        .change();
+                }
+            })
+            .bind('focus', function() {
+                log('searcher show');
+                $(graphs).show();
             });
-
 
         wrapper
             .attr('class', 'select')
+            .css('position', 'relative')
             .css('display', 'inline');
 
         graphs
             .attr('size', size)
             .css('height', (parseInt(graphs.css('height'))*size)+'px')
             .css('width', graphs.width()+'px') // prevent dynamic change
+            .css('position', 'absolute')
+            .css('top', '20px')
+            .css('left', '0px')
+            .css('z-index', '999')
             .removeClass('select')
             .wrap(wrapper)
             .before(searcher);
+
+        $(graphs).hide();
 
 
         //$('.select').css('vertical-align', 'middle')
